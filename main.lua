@@ -1,6 +1,9 @@
 
 Binocles = require('Binocles');
+class = require('30log');
 local push  = require('push');
+local Player = require('Player');
+local Ball = require('Ball');
 
 math.randomseed(os.time());
 
@@ -22,17 +25,6 @@ local smallF; -- small font 8
 local bigF; -- big fount 32
 
 
--- Players conf
-player1Score = 0;
-player2Score = 0;
-player1Y = 20;
-player2Y = VIRTUAL_HEIGHT - 50;
-
--- Ball conf
-ballX = VIRTUAL_WIDTH / 2 - 2;
-ballY = VIRTUAL_HEIGHT / 2 - 2;
-ballDX = math.random(2) == 1 and 100 or -100;
-ballDY = math.random(-50, 50);
 
 love.load = function()
 	Binocles();
@@ -42,29 +34,36 @@ love.load = function()
 
 	love.graphics.setFont(smallF);
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT,WINDOW_WIDTH, WINDOW_HEIGHT, winOptions);
+  player1 = Player(10, 30, 5, 20);
+  player2 = Player(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20);
+  ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4);
 	gameState = 'start';
-	Binocles:watch("ballDX", function() return ballDX end);
-	Binocles:watch("ballDY", function() return ballDY end);
 end
 
 love.update = function(dt)
 	Binocles:update(dt);
 	if love.keyboard.isDown('w') then
-		player1Y = math.max(0, player1Y + -PADDLE_SPEED * dt);
+		player1.dy = -PADDLE_SPEED;
 	elseif love.keyboard.isDown('s') then
-		player1Y = math.min(VIRTUAL_HEIGHT - 20, player1Y + PADDLE_SPEED * dt);
+		player1.dy = PADDLE_SPEED;
+  else
+    player1.dy = 0;
 	end
 
 	if love.keyboard.isDown('up') then
-		player2Y = math.max(0, player2Y + -PADDLE_SPEED * dt);
+		player2.dy = -PADDLE_SPEED;
 	elseif love.keyboard.isDown('down') then
-		player2Y = math.min(VIRTUAL_HEIGHT - 20, player2Y + PADDLE_SPEED * dt);
+		player2.dy = -PADDLE_SPEED;
+  else
+    player2.dy = 0;
 	end
 
 	if gameState == 'play' then
-		ballX = ballX + ballDX * dt;
-		ballY = ballY + ballDY * dt;
+    ball:update(dt);
 	end
+
+  player1:update(dt);
+  player2:update(dt);
 end
 
 love.draw = function()
@@ -72,17 +71,13 @@ love.draw = function()
 	love.graphics.clear(40/255, 45/255, 52/255, 255/255);
 	love.graphics.printf('Hello',0 , 20, VIRTUAL_WIDTH, 'center' );
 
-	-- left paddle
-	love.graphics.rectangle('fill', 10, player1Y, 5, 20);
+  player1:draw();
+  player2:draw();
+  ball:draw();
 
-	-- right paddle
-	love.graphics.rectangle('fill', VIRTUAL_WIDTH - 10, player2Y, 5, 20);
-
-	-- render ball (center)
-	love.graphics.rectangle('fill', ballX, ballY, 4, 4);
 	push:apply('end');
 
-		Binocles:draw();
+  Binocles:draw();
 end
 
 
@@ -94,10 +89,7 @@ function love.keypressed(key)
 					gameState = 'play';
 			elseif gameState == 'play' then
 					gameState = 'start';
-					ballX = VIRTUAL_WIDTH / 2 - 2
-					ballY = VIRTUAL_HEIGHT / 2 - 2
-					ballDX = math.random(2) == 1 and 100 or -100;
-					ballDY = math.random(-50, 50);
+          ball:reset();
 				end
 			end
 		end
