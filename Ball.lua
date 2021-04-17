@@ -28,6 +28,19 @@ Ball.update = function(self, dt)
   self.y = self.y + self.dy * dt;
 end
 
+Ball.collides = function(self, player)
+	if self.x > player.x + player.width or player.x > self.x + self.width then
+		return false;
+	end
+
+	if self.y > player.y + player.height or player.y > self.y + self.height then
+		return false;
+	end
+
+	return true;
+end
+
+
 Ball.draw = function(self)
   love.graphics.rectangle('fill', self.x, self.y, self.width, self.height);
 end

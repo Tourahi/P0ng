@@ -1,13 +1,16 @@
 local Player = class("Player", {
+	name,
   x,
   y,
   width,
   height,
-  dy
+  dy,
+	score = 0
 });
 
-Player.init = function(self, x, y, width, height)
-  self.x = x
+Player.init = function(self, name, x, y, width, height)
+  self.name = name;
+	self.x = x
   self.y = y
   self.width = width
   self.height = height
@@ -26,6 +29,7 @@ end
 Player.draw = function(self)
   love.graphics.rectangle('fill', self.x, self.y, self.width, self.height);
 end
+
 
 
 return Player;

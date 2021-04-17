@@ -35,8 +35,8 @@ love.load = function()
 
 	love.graphics.setFont(smallF);
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT,WINDOW_WIDTH, WINDOW_HEIGHT, winOptions);
-  player1 = Player(10, 30, 5, 20);
-  player2 = Player(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20);
+  player1 = Player("player1",10, 30, 5, 20);
+  player2 = Player("player2",VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20);
   ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4);
 	gameState = 'start';
 	Binocles:watch("FPS", function() return love.timer.getFPS() end);
@@ -44,6 +44,42 @@ end
 
 love.update = function(dt)
 	Binocles:update(dt);
+
+	if gameState == 'play' then
+
+		if ball:collides(player1) then
+			ball.dx = -ball.dx * 1.03;
+			ball.x = player1.x + 5;
+
+			if ball.dy < 0 then
+				ball.dy = -math.random(10, 150);
+			else
+				ball.dy = math.random(10, 150);
+			end
+		end
+
+		if ball:collides(player2) then
+			ball.dx = -ball.dx * 1.03;
+			ball.x = player2.x - 4;
+
+			if ball.dy < 0 then
+				ball.dy = -math.random(10, 150);
+			else
+				ball.dy = math.random(10, 150);
+			end
+		end
+
+		if ball.y <= 0 then
+			ball.y = 0;
+			ball.dy = -ball.dy;
+		end
+
+		if ball.y >= VIRTUAL_HEIGHT - 4 then
+			ball.y = VIRTUAL_HEIGHT - 4;
+			ball.dy = -ball.dy;
+		end
+	end
+
 	if love.keyboard.isDown('w') then
 		player1.dy = -PADDLE_SPEED;
 	elseif love.keyboard.isDown('s') then
@@ -72,7 +108,13 @@ love.draw = function()
 
 	push:apply('start');
 	love.graphics.clear(40/255, 45/255, 52/255, 255/255);
-	love.graphics.printf('Hello',0 , 20, VIRTUAL_WIDTH, 'center' );
+	love.graphics.printf('Score',0 , 20, VIRTUAL_WIDTH, 'center' );
+	love.graphics.setFont(bigF);
+	love.graphics.print(tostring(player1.score), VIRTUAL_WIDTH / 2 - 50,
+			VIRTUAL_HEIGHT / 25);
+	love.graphics.print(tostring(player2.score), VIRTUAL_WIDTH / 2 + 30,
+			VIRTUAL_HEIGHT / 25);
+	love.graphics.setFont(smallF);
 
   player1:draw();
   player2:draw();
