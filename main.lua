@@ -28,6 +28,7 @@ local bigF; -- big fount 32
 
 love.load = function()
 	Binocles();
+	love.window.setTitle("Pong");
 	love.graphics.setDefaultFilter('nearest', 'nearest');
 	smallF = love.graphics.newFont('font.ttf', 8);
 	bigF = love.graphics.newFont('font.ttf', 32);
@@ -38,6 +39,7 @@ love.load = function()
   player2 = Player(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20);
   ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4);
 	gameState = 'start';
+	Binocles:watch("FPS", function() return love.timer.getFPS() end);
 end
 
 love.update = function(dt)
@@ -53,7 +55,7 @@ love.update = function(dt)
 	if love.keyboard.isDown('up') then
 		player2.dy = -PADDLE_SPEED;
 	elseif love.keyboard.isDown('down') then
-		player2.dy = -PADDLE_SPEED;
+		player2.dy = PADDLE_SPEED;
   else
     player2.dy = 0;
 	end
@@ -67,6 +69,7 @@ love.update = function(dt)
 end
 
 love.draw = function()
+
 	push:apply('start');
 	love.graphics.clear(40/255, 45/255, 52/255, 255/255);
 	love.graphics.printf('Hello',0 , 20, VIRTUAL_WIDTH, 'center' );
@@ -74,10 +77,8 @@ love.draw = function()
   player1:draw();
   player2:draw();
   ball:draw();
-
+	Binocles:draw();
 	push:apply('end');
-
-  Binocles:draw();
 end
 
 
