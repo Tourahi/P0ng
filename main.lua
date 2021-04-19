@@ -7,7 +7,7 @@ local Ball = require('Ball');
 
 math.randomseed(os.time());
 
-local WIN_SCORE = 2;
+local WIN_SCORE = 10;
 
 WINDOW_WIDTH = 1280;
 WINDOW_HEIGHT = 720;
